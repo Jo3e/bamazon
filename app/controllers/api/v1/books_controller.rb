@@ -7,7 +7,10 @@ class Api::V1::BooksController < ApplicationController
   end
 
   def create
-    @book = Book.new(book_params)
+    # binding.irb
+    author = Author.create!(author_params)
+    # since i cannot merge an object to a hash on new, i will pass author_id to the hash
+    @book = Book.new(book_params.merge(author_id: author.id))
 
     if @book.save
       render json: @book, status: :created
@@ -23,7 +26,11 @@ class Api::V1::BooksController < ApplicationController
 
   private
     
+    def author_params
+      params.require(:author).permit(:first_name, :last_name, :age)
+    end
+
     def book_params
-      params.require(:book).permit(:title, :author)
+      params.require(:book).permit(:title)
     end
 end
